@@ -1,0 +1,100 @@
+﻿@page "/todo"
+
+@using blazorServerWithDB.Data
+@using blazorServerWithDB.Models
+@using Microsoft.Data.SqlClient
+@inject ITodoService todoService
+
+<h1>Todo List</h1>
+
+<p>My Todo list</p>
+
+<!--FILTER PART
+****************-->
+status:
+<select @onchange="StatusSelected">
+    @foreach (string aStatus in Todoes.statusFilterList)
+    {
+        <option value="@aStatus" >@aStatus</option>
+    }
+</select>
+Sort:
+<select @onchange="orderSelected">
+    @foreach (string aColumnName in Todoes.ColumnNameList)
+    {
+        <option>@aColumnName</option>
+    }
+</select>
+<button class="btn btn-primary" @onclick="AddTodo">Add Todo</button>
+
+
+<!--Add TO DO ITEM FORM
+************************-->
+@if (showTodoForm)
+{
+<div style="max-width: 300px; border: 1px solid #ced4da; position: fixed; left: 200px; top: 100px;z-index: 10" class="shadow p-3 mb-5 bg-white rounded">
+    <div class="form-group">
+        <label for="description">Description</label>
+        <input type="text" class="form-control" name="description" id="description" @bind-value="@aTodo.Description" />
+    </div>
+    <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status" class="form-control" @bind="aTodo.Status">
+            @foreach (string aStatus in Todoes.statusList)
+            {
+                <option value="@aStatus">@aStatus</option>
+            }
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="dueDate">Due Date</label>
+        <input id="dueDate" type="date" class="form-control" @bind-value="@aTodo.DueDate" />
+    </div>
+    @if (addOrEdit == "add")
+    {
+        <button class="btn btn-primary" @onclick="TodoAdded">Add Todo</button>
+    }
+    else
+    {
+        <button class="btn btn-primary" @onclick="TodoEdited">Update Todo</button>
+    }
+    <button class="btn btn-secondary" @onclick="AddEditCancelled">Cancel</button>
+</div>
+}
+
+<!--TO DO REPORT
+****************-->
+@if (todoList == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Id</th>
+                <th>start date</th>
+                <th>due date</th>
+                <th>status</th>
+                <th>status date</th>
+                <th>description</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var todo in todoList)
+            {
+                <tr>
+                    <td style="cursor: pointer" @onclick="@(e=>EditTodo(todo.Id))"><span class="oi oi-pencil"></span></td>
+                    <td>@todo.Id</td>
+                    <td>@todo.StartDate.ToShortDateString()</td>
+                    <td>@todo.DueDateSt</td>
+                    <td>@todo.Status</td>
+                    <td>@todo.StatusDate.ToShortDateString()</td>
+                    <td>@todo.Description</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
