@@ -1,0 +1,74 @@
+﻿@using blazorServerWithDB.Data
+@using blazorServerWithDB.Models
+@inject ITodoService todoService
+<div style="max-width: 300px; border: 1px solid #ced4da;" class="shadow p-3 mb-5 bg-white rounded">
+    <div class="form-group">
+        <label for="description">Description</label>
+        <input type="text" class="form-control" name="description" id="description" @bind-value="@aTodo.Description" />
+    </div>
+    <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status" class="form-control" @bind="aTodo.Status">
+            @foreach (string aStatus in Todoes.statusList)
+            {
+                <option value="@aStatus">@aStatus</option>
+            }
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="dueDate">Due Date</label>
+        <input id="dueDate" type="date" class="form-control" @bind-value="@aTodo.DueDate" />
+    </div>
+    @if (addOrEdit == "add")
+    {
+        <button class="btn btn-primary" @onclick="TodoAdded">Add Todo</button>
+    }
+    else
+    {
+        <button class="btn btn-primary" @onclick="TodoEdited">Update Todo</button>
+    }
+    <button class="btn btn-secondary" @onclick="AddEditCancelled">Cancel</button>
+</div>
+
+@code {
+    private Todoes _originalTodo = new Todoes();
+
+
+    [Parameter]
+    public Todoes aTodo
+    {
+        get;set;
+
+    }
+
+    [Parameter]
+    public string addOrEdit { get; set; }
+
+    [Parameter]
+    public Func<Task> TodoFormFinished { get; set; }
+
+
+    protected override void OnParametersSet()
+    {
+        aTodo.Update(_originalTodo);   //Keep the original todo, incase the user pressed "cancel"
+    }
+    public async Task TodoAdded()
+    {
+        todoService.AddTodo(aTodo);
+        await TodoFormFinished();
+
+    }
+
+
+    public async Task  TodoEdited()
+    {
+        todoService.EditTodo(aTodo);
+        await TodoFormFinished();
+    }
+
+    public void AddEditCancelled()
+    {
+        _originalTodo.Update(aTodo);
+        TodoFormFinished();  //Any change the user has done will stay in "_editedTodo" which is not a tracked item
+    }
+}

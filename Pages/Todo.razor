@@ -15,14 +15,15 @@ status:
 <select @onchange="StatusSelected">
     @foreach (string aStatus in Todoes.statusFilterList)
     {
-        <option value="@aStatus" >@aStatus</option>
+        <option>@aStatus</option>
     }
 </select>
 Sort:
 <select @onchange="orderSelected">
-    @foreach (string aColumnName in Todoes.ColumnNameList)
+    @foreach (string aColumnTitle in Todoes.ColumnNameList)
     {
-        <option>@aColumnName</option>
+        string aColumnName = aColumnTitle.Replace(" ", "");  //remove spaces - this will convert "Due Date" to be "DueDate" which is identical to the field name
+        <option value="@aColumnName">@aColumnTitle</option>
     }
 </select>
 <button class="btn btn-primary" @onclick="AddTodo">Add Todo</button>
@@ -32,33 +33,8 @@ Sort:
 ************************-->
 @if (showTodoForm)
 {
-<div style="max-width: 300px; border: 1px solid #ced4da; position: fixed; left: 200px; top: 100px;z-index: 10" class="shadow p-3 mb-5 bg-white rounded">
-    <div class="form-group">
-        <label for="description">Description</label>
-        <input type="text" class="form-control" name="description" id="description" @bind-value="@aTodo.Description" />
-    </div>
-    <div class="form-group">
-        <label for="status">Status</label>
-        <select id="status" class="form-control" @bind="aTodo.Status">
-            @foreach (string aStatus in Todoes.statusList)
-            {
-                <option value="@aStatus">@aStatus</option>
-            }
-        </select>
-    </div>
-    <div class="form-group">
-        <label for="dueDate">Due Date</label>
-        <input id="dueDate" type="date" class="form-control" @bind-value="@aTodo.DueDate" />
-    </div>
-    @if (addOrEdit == "add")
-    {
-        <button class="btn btn-primary" @onclick="TodoAdded">Add Todo</button>
-    }
-    else
-    {
-        <button class="btn btn-primary" @onclick="TodoEdited">Update Todo</button>
-    }
-    <button class="btn btn-secondary" @onclick="AddEditCancelled">Cancel</button>
+<div style="position:fixed;left:200px;top:300px;z-index:10">
+    <TodoForm addOrEdit="@addOrEdit" aTodo="@aTodo" TodoFormFinished="@TodoFormFinished"></TodoForm>
 </div>
 }
 

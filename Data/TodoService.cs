@@ -24,7 +24,7 @@ namespace blazorServerWithDB.Data
         Task<List<Todoes>> TodoListByStatus(string theStatus, string orderBy);
 
         void AddTodo(Todoes theTodo);
-        void EditTodo();
+        void EditTodo(Todoes aTodo);
     }
 
     /// <summary>
@@ -53,14 +53,14 @@ namespace blazorServerWithDB.Data
             if (!Todoes.statusFilterList.Contains(theStatus))
             {
                 //Invalid status value
-                throw new Exception("Invalid status value:"+theStatus);
+                throw new Exception($"Invalid status value:{theStatus}");
             }
             IEnumerable<Todoes> filteredTodos;
 
             if (theStatus == "All")
             {
                 //show to dos with any status
-                filteredTodos = db.Todoes.OrderBy(columns => columns.DueDate).ToList();
+                filteredTodos = db.Todoes.OrderBy(columns => EF.Property<object>(columns,orderBy)).ToList();
             }
             else if (theStatus == "Active")
             {
@@ -68,8 +68,8 @@ namespace blazorServerWithDB.Data
                 filteredTodos =
                     (from aTodo in db.Todoes
                     where aTodo.Status == "Not Started" || aTodo.Status == "Started"
-                    orderby aTodo.DueDate descending
-                    select aTodo);
+                    orderby EF.Property<object>(aTodo, orderBy)
+                     select aTodo);
             }
             else
             {
@@ -77,35 +77,10 @@ namespace blazorServerWithDB.Data
                 filteredTodos =
                     (from aTodo in db.Todoes
                     where aTodo.Status == theStatus
-                    orderby aTodo.DueDate descending 
+                    orderby EF.Property<object>(aTodo,orderBy) 
                     select aTodo);
             }
 
-           
-            //sort order
-            switch (orderBy)
-            {
-                case "Start Date":
-                    filteredTodos = filteredTodos.OrderBy(todos => todos.StartDate);
-                    break;
-                case "Id":
-                    filteredTodos = filteredTodos.OrderBy(todos => todos.Id);
-                    break;
-                case "Due Date":
-                    filteredTodos = filteredTodos.OrderBy(todos => todos.DueDate);
-                    break;
-                case "Status":
-                    filteredTodos = filteredTodos.OrderBy(todos => todos.Status);
-                    break;
-                case "Status Date":
-                    filteredTodos = filteredTodos.OrderBy(todos => todos.StatusDate);
-                    break;
-                case "Description":
-                    filteredTodos = filteredTodos.OrderBy(todos => todos.Description);
-                    break;
-                default:
-                    throw new Exception("Invalid order by value:" + orderBy);
-            }
             return Task.FromResult(filteredTodos.ToList());
         }
 
@@ -117,8 +92,9 @@ namespace blazorServerWithDB.Data
             db.SaveChanges();
         }
 
-        public void EditTodo()
+        public void EditTodo(Todoes aTodo)
         {
+            db.Todoes.Update(aTodo);
             db.SaveChanges();
         }
     }

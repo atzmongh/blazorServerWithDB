@@ -9,7 +9,7 @@ namespace blazorServerWithDB.Pages
 {
     public partial class Todo
     {
-        #region ===VARIABLES===
+       
         public List<Todoes> todoList;
 
         public Todoes aTodo = new Todoes()
@@ -29,8 +29,7 @@ namespace blazorServerWithDB.Pages
         public bool showTodoForm = false;
         public string addOrEdit = "add";   //or "edit"
 
-        #endregion
-        #region methods
+       
         protected override async Task OnInitializedAsync()
         {
             todoList = await todoService.TodoListByStatus(filterStatus, orderBy);
@@ -63,45 +62,24 @@ namespace blazorServerWithDB.Pages
             showTodoForm = true;
         }
 
-        public async Task TodoAdded()
-        {
-            showTodoForm = false;
-            todoService.AddTodo(aTodo);
-            todoList = await todoService.TodoListByStatus(filterStatus, orderBy);
-        }
-
         public void EditTodo(int id)
         {
-            originalTodo = todoList.Find(oneTodo => oneTodo.Id == id);
-            if (originalTodo == null)
+            aTodo = todoList.Find(oneTodo => oneTodo.Id == id);
+            if (aTodo == null)
             {
                 throw new Exception("Todo item with Id:" + id + " was not found. Total todos in the list:" + todoList.Count);
             }
-            originalTodo.Update(aTodo);  //We copy the values of original to do into aTodo. Note that if we 
-                                         //would use assignment (aTodo = originalTodo), then the UI will 
-                                         //update immediately when the user updates any field.
-                                         //At this point aTodo is equal to the originalTodo - the item before the update.                         
+           
             addOrEdit = "edit";
             showTodoForm = true;
         }
 
-        public async Task TodoEdited()
+        public async Task TodoFormFinished()
         {
             showTodoForm = false;
-            if (originalTodo.Status != aTodo.Status)
-            {
-                //Status has changed - update the status date
-                aTodo.StatusDate = DateTime.Now;
-            }
-            aTodo.Update(originalTodo);  //originalTodo is a tracked item. When updating it - it will be saved to DB
-            todoService.EditTodo();
             todoList = await todoService.TodoListByStatus(filterStatus, orderBy);
-        }
+            this.StateHasChanged();
 
-        public void AddEditCancelled()
-        {
-            showTodoForm = false;
         }
-#endregion
     }
 }
