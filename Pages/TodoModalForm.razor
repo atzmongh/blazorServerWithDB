@@ -1,0 +1,64 @@
+﻿@using blazorServerWithDB.Data
+@using blazorServerWithDB.Models
+@inject ITodoService todoService
+
+<Modal @ref="modalRef">
+    <ModalBackdrop />
+    <ModalContent IsCentered="true">
+        <ModalHeader>
+            <ModalTitle>@addOrEdit Todo</ModalTitle>
+            <CloseButton Clicked="@HideModal" />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>Description</FieldLabel>
+                <TextEdit @bind-Text="aTodo.Description" Placeholder="Enter todo description" />
+            </Field>
+            <Field>
+                <FieldLabel></FieldLabel>
+                <TextEdit Placeholder="Enter surname..." />
+            </Field>
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@HideModal">Close</Button>
+            <Button Color="Color.Primary" Clicked="@HideModal">Save Changes</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+@code {
+    private Modal modalRef = new Modal();
+    [Parameter]
+    public bool showForm
+    {
+        get
+        {
+            return modalRef.Visible;
+        }
+        set
+        {
+            if (value == true)
+                modalRef.Show();
+        }
+    }
+    [Parameter]
+    public Func<Task> ModalFormFinished { get; set; }
+
+    [Parameter]
+    public Todoes aTodo
+    {
+        get; set;
+
+    }
+
+    [Parameter]
+    public string addOrEdit { get; set; }
+
+    public void HideModal()
+    {
+        modalRef.Hide();
+        ModalFormFinished();
+    }
+
+
+}

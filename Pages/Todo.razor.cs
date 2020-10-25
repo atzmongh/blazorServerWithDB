@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Blazorise;
 using blazorServerWithDB.Models;
 using Microsoft.AspNetCore.Components;
 
@@ -27,8 +28,9 @@ namespace blazorServerWithDB.Pages
 
         public string orderBy = "Id";
         public bool showTodoForm = false;
+        public bool showModalForm = false;
         public string addOrEdit = "add";   //or "edit"
-
+        public Modal modalRef = new Modal();
        
         protected override async Task OnInitializedAsync()
         {
@@ -59,8 +61,11 @@ namespace blazorServerWithDB.Pages
                 StatusDate = DateTime.Now
             };
             this.addOrEdit = "add";
-            this.showTodoForm = true;
+            // this.showTodoForm = true;
+            showModalForm = true;
+            this.StateHasChanged();
         }
+        
 
         public void EditTodo(int id)
         {
@@ -77,6 +82,13 @@ namespace blazorServerWithDB.Pages
         public async Task TodoFormFinished()
         {
             showTodoForm = false;
+            todoList = await todoService.TodoListByStatus(filterStatus, orderBy);
+            this.StateHasChanged();
+
+        }
+        public async Task ModalFormFinished()
+        {
+            showModalForm = false;
             todoList = await todoService.TodoListByStatus(filterStatus, orderBy);
             this.StateHasChanged();
 

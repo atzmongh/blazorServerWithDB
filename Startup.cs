@@ -13,6 +13,9 @@ using blazorServerWithDB.Data;
 using blazorServerWithDB.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Blazorise;
+using Blazorise.Bootstrap;
+using Blazorise.Icons.FontAwesome;
 
 namespace blazorServerWithDB
 {
@@ -32,7 +35,12 @@ namespace blazorServerWithDB
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
-            services.AddTransient<ITodoService,TodoService>();
+            services.AddTransient<ITodoService, TodoService>();
+            services.AddBlazorise(options =>
+            {
+                options.ChangeTextOnKeyPress = true; // optional
+            }).AddBootstrapProviders()
+              .AddFontAwesomeIcons();
             //Commands to get logging of SQL statements and see the problem of "double records being tracked"
             //However, did not seem to give me the data in the "debug" window.
             //services.AddLogging(loggingBuilder =>
@@ -65,12 +73,16 @@ namespace blazorServerWithDB
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.ApplicationServices
+              .UseBootstrapProviders()
+              .UseFontAwesomeIcons();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
+           
         }
     }
 }
