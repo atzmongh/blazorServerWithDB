@@ -60,7 +60,7 @@ namespace blazorServerWithDB.Data
             if (theStatus == "All")
             {
                 //show to dos with any status
-                filteredTodos = db.Todoes.OrderBy(columns => EF.Property<object>(columns,orderBy)).ToList();
+                filteredTodos = db.Todoes.OrderBy(columns => EF.Property<object>(columns,orderBy));
             }
             else if (theStatus == "Active")
             {

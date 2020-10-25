@@ -50,7 +50,7 @@ namespace blazorServerWithDB.Pages
 
         public void AddTodo()
         {
-            aTodo = new Todoes()
+            this.aTodo = new Todoes()
             {
                 Description = "",
                 DueDate = DateTime.Now,
@@ -58,8 +58,8 @@ namespace blazorServerWithDB.Pages
                 Status = "Not Started",
                 StatusDate = DateTime.Now
             };
-            addOrEdit = "add";
-            showTodoForm = true;
+            this.addOrEdit = "add";
+            this.showTodoForm = true;
         }
 
         public void EditTodo(int id)
