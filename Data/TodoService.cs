@@ -21,7 +21,7 @@ namespace blazorServerWithDB.Data
         /// <param name="orderBy">any field name. For a list of fields see in Todoes2.cs
         /// (ColumnNameList)</param>
         /// <returns>List of Todoes - filtered and ordered</returns>
-        Task<List<Todoes>> TodoListByStatus(string theStatus, string orderBy);
+        Task<IEnumerable<Todoes>> TodoListByStatus(string theStatus, string orderBy);
 
         void AddTodo(Todoes theTodo);
         void EditTodo(Todoes aTodo);
@@ -48,7 +48,7 @@ namespace blazorServerWithDB.Data
         /// <param name="orderBy">any field name. For a list of fields see in Todoes2.cs
         /// (ColumnNameList)</param>
         /// <returns>List of Todoes - filtered and ordered</returns>
-        public Task<List<Todoes>> TodoListByStatus(string theStatus, string orderBy)
+        public Task<IEnumerable<Todoes>> TodoListByStatus(string theStatus, string orderBy)
         {
             if (!Todoes.statusFilterList.Contains(theStatus))
             {
@@ -60,7 +60,7 @@ namespace blazorServerWithDB.Data
             if (theStatus == "All")
             {
                 //show to dos with any status
-                filteredTodos = db.Todoes.OrderBy(columns => EF.Property<object>(columns,orderBy));
+                filteredTodos = db.Todoes.OrderBy(columns => EF.Property<object>(columns,orderBy)).AsNoTracking();
             }
             else if (theStatus == "Active")
             {
@@ -69,7 +69,7 @@ namespace blazorServerWithDB.Data
                     (from aTodo in db.Todoes
                     where aTodo.Status == "Not Started" || aTodo.Status == "Started"
                     orderby EF.Property<object>(aTodo, orderBy)
-                     select aTodo);
+                     select aTodo).AsNoTracking();
             }
             else
             {
@@ -78,10 +78,10 @@ namespace blazorServerWithDB.Data
                     (from aTodo in db.Todoes
                     where aTodo.Status == theStatus
                     orderby EF.Property<object>(aTodo,orderBy) 
-                    select aTodo);
+                    select aTodo).AsNoTracking();
             }
 
-            return Task.FromResult(filteredTodos.ToList());
+            return Task.FromResult(filteredTodos);
         }
 
         public void AddTodo(Todoes theTodo)

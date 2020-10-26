@@ -10,18 +10,34 @@
             <CloseButton Clicked="@HideModal" />
         </ModalHeader>
         <ModalBody>
-            <Field>
-                <FieldLabel>Description</FieldLabel>
-                <TextEdit @bind-Text="aTodo.Description" Placeholder="Enter todo description" />
-            </Field>
-            <Field>
-                <FieldLabel></FieldLabel>
-                <TextEdit Placeholder="Enter surname..." />
-            </Field>
+            <Validations Mode="ValidationMode.Auto"  ValidateOnLoad="true">
+                <Validation Validator="@ValidationRule.IsNotEmpty">
+                    <Field>
+                        <FieldLabel>Description</FieldLabel>
+                        <TextEdit @bind-Text="aTodo.Description" Placeholder="Enter todo description">
+                            <Feedback>
+                                <ValidationError>Please enter a good description</ValidationError>
+                            </Feedback>
+                        </TextEdit>
+                    </Field>
+                </Validation>
+                <Field>
+                    <FieldLabel></FieldLabel>
+                    <TextEdit Placeholder="Enter surname..." />
+                </Field>
+            </Validations>
         </ModalBody>
         <ModalFooter>
-            <Button Color="Color.Secondary" Clicked="@HideModal">Close</Button>
-            <Button Color="Color.Primary" Clicked="@HideModal">Save Changes</Button>
+            <Button Color="Color.Secondary" Clicked="@HideModal">Cancel</Button>
+            @if (addOrEdit == "add")
+            {
+                <Button Color="Color.Primary" Clicked="@TodoAdded">Add Todo</Button>
+            }
+            else
+            {
+                <Button Color="Color.Primary" Clicked="@TodoEdited">Update Todo</Button>
+            }
+
         </ModalFooter>
     </ModalContent>
 </Modal>
@@ -31,14 +47,16 @@
     [Parameter]
     public bool showForm
     {
-        get
-        {
-            return modalRef.Visible;
-        }
+
         set
         {
             if (value == true)
+            {
+                modalRef = new Modal();
                 modalRef.Show();
+            }
+
+
         }
     }
     [Parameter]
@@ -51,6 +69,7 @@
 
     }
 
+
     [Parameter]
     public string addOrEdit { get; set; }
 
@@ -58,6 +77,36 @@
     {
         modalRef.Hide();
         ModalFormFinished();
+    }
+
+    public void TodoAdded()
+    {
+        if (aTodo.Description == "")
+        {
+
+        }
+        todoService.AddTodo(aTodo);
+        this.HideModal();
+    }
+
+
+    public void TodoEdited()
+    {
+        todoService.EditTodo(aTodo);
+        this.HideModal();
+    }
+
+    public void Required(ValidatorEventArgs e)
+    {
+        string desc = e.Value == null ? "" : e.Value.ToString();
+        if (desc == "")
+        {
+            e.Status = ValidationStatus.None;
+        }
+        else
+        {
+            e.Status = ValidationStatus.Success;
+        }
     }
 
 

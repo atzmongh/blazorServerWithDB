@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace blazorServerWithDB.Models
 {
@@ -11,6 +12,7 @@ namespace blazorServerWithDB.Models
         }
 
         public int Id { get; set; }
+        [Required(ErrorMessage ="Please enter something in the description")]
         public string Description { get; set; }
         public DateTime? DueDate { get; set; }
         public DateTime StartDate { get; set; }

@@ -11,7 +11,7 @@ namespace blazorServerWithDB.Pages
     public partial class Todo
     {
        
-        public List<Todoes> todoList;
+        public IEnumerable<Todoes> todoList;
 
         public Todoes aTodo = new Todoes()
         {
@@ -69,14 +69,14 @@ namespace blazorServerWithDB.Pages
 
         public void EditTodo(int id)
         {
-            aTodo = todoList.Find(oneTodo => oneTodo.Id == id);
+            aTodo = todoList.Single(oneTodo => oneTodo.Id == id);
             if (aTodo == null)
             {
-                throw new Exception("Todo item with Id:" + id + " was not found. Total todos in the list:" + todoList.Count);
+                throw new Exception($"Todo item with Id:{id} was not found. Total todos in the list: {todoList.Count()}");
             }
            
             addOrEdit = "edit";
-            showTodoForm = true;
+            showModalForm = true;
         }
 
         public async Task TodoFormFinished()
