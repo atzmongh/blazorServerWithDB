@@ -4,6 +4,7 @@
 @using blazorServerWithDB.Models
 @using Microsoft.Data.SqlClient
 @inject ITodoService todoService
+@using Flexor   @*not enough documentation to use it*@
 
 <h1>Todo List</h1>
 
@@ -11,34 +12,36 @@
 
 <!--FILTER PART
 ****************-->
-status:
-<select @onchange="StatusSelected">
-    @foreach (string aStatus in Todoes.statusFilterList)
-    {
-        <option>@aStatus</option>
-    }
-</select>
-Sort:
-<select @onchange="orderSelected">
-    @foreach (string aColumnTitle in Todoes.ColumnNameList)
-    {
-        string aColumnName = aColumnTitle.Replace(" ", "");  //remove spaces - this will convert "Due Date" to be "DueDate" which is identical to the field name
-        <option value="@aColumnName">@aColumnTitle</option>
-    }
-</select>
-<button class="btn btn-primary" @onclick="AddTodo">Add Todo</button>
 
+<div style="display:flex; flex-direction:row">
+    <Field Style="width:300px;margin-right:20px;">
+        <FieldLabel>Status Filter</FieldLabel>
+        <Select TValue="string" SelectedValue="filterStatus" SelectedValueChanged="StatusSelected">
+            @foreach (string aStatus in Todoes.statusFilterList)
+            {
+                <SelectItem Value="@aStatus">@aStatus</SelectItem>
+            }
+        </Select>
+    </Field>
 
-<!--Add TO DO ITEM FORM
-************************-->
-@if (showTodoForm)
-{
-<div style="position:fixed;left:200px;top:300px;z-index:10">
-    <TodoForm addOrEdit="@addOrEdit" aTodo="@aTodo" TodoFormFinished="@TodoFormFinished"></TodoForm>
+    <Field Style="width:300px;">
+        <FieldLabel>Sort Field</FieldLabel>
+        <Select TValue="string" SelectedValue="orderBy" SelectedValueChanged="OrderSelected">
+            @foreach (string aColumnTitle in Todoes.ColumnNameList)
+            {
+                string aColumnName = aColumnTitle.Replace(" ", "");  //remove spaces - this will convert "Due Date" to be "DueDate" which is identical to the field name
+                <SelectItem Value="@aColumnName">@aColumnName</SelectItem>
+            }
+        </Select>
+    </Field>
+
 </div>
-}
 
-    <TodoModalForm showForm="@showModalForm" ModalFormFinished="@ModalFormFinished"
+<Button Color="Color.Primary" Clicked="@AddTodo">Add Todo</Button>
+
+<!--Add/EDIT TO DO ITEM MODAL FORM
+***********************************-->
+<TodoModalForm showForm="@showModalForm" ModalFormFinished="@ModalFormFinished"
                addOrEdit="@addOrEdit" aTodo="@aTodo"></TodoModalForm>
 
 

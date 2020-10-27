@@ -10,7 +10,7 @@
             <CloseButton Clicked="@HideModal" />
         </ModalHeader>
         <ModalBody>
-            <Validations Mode="ValidationMode.Auto"  ValidateOnLoad="true">
+            <Validations @ref="validationsRef" Mode="ValidationMode.Auto"  ValidateOnLoad="true">
                 <Validation Validator="@ValidationRule.IsNotEmpty">
                     <Field>
                         <FieldLabel>Description</FieldLabel>
@@ -22,9 +22,24 @@
                     </Field>
                 </Validation>
                 <Field>
-                    <FieldLabel></FieldLabel>
-                    <TextEdit Placeholder="Enter surname..." />
+                    <FieldLabel>Status</FieldLabel>
+                    <Select TValue="string" @bind-SelectedValue="aTodo.Status">
+                        @foreach(string aStatus in Todoes.statusList)
+                        {
+                            <SelectItem Value="@aStatus">@aStatus</SelectItem>
+                        }
+                    </Select>
                 </Field>
+                <Validation Validator="@ValidDueDate">
+                    <Field>
+                        <FieldLabel>Due Date</FieldLabel>
+                        <DateEdit TValue="DateTime?" @bind-Date="aTodo.DueDate">
+                            <Feedback>
+                                <ValidationError>Due date cannot be in the past</ValidationError>
+                            </Feedback>
+                        </DateEdit>
+                    </Field>
+                </Validation>
             </Validations>
         </ModalBody>
         <ModalFooter>
@@ -43,20 +58,19 @@
 </Modal>
 
 @code {
-    private Modal modalRef = new Modal();
+    private Modal modalRef;
+    private Validations validationsRef;
     [Parameter]
     public bool showForm
     {
-
         set
         {
             if (value == true)
             {
-                modalRef = new Modal();
                 modalRef.Show();
+                validationsRef.ValidateAll();   //This is required for the next time we are using the Modal form - without it the
+                                                //validators remained in the "valid" status.
             }
-
-
         }
     }
     [Parameter]
@@ -81,33 +95,30 @@
 
     public void TodoAdded()
     {
-        if (aTodo.Description == "")
+        if (validationsRef.ValidateAll())
         {
+            todoService.AddTodo(aTodo);
+            aTodo.Description = "";
+            this.HideModal();
 
         }
-        todoService.AddTodo(aTodo);
-        this.HideModal();
     }
 
 
     public void TodoEdited()
     {
-        todoService.EditTodo(aTodo);
-        this.HideModal();
-    }
+        if (validationsRef.ValidateAll())
+        {
+            todoService.EditTodo(aTodo);
+            this.HideModal();
+        }
 
-    public void Required(ValidatorEventArgs e)
+    }
+    public void ValidDueDate(ValidatorEventArgs e)
     {
-        string desc = e.Value == null ? "" : e.Value.ToString();
-        if (desc == "")
+        if ((DateTime)e.Value < DateTime.Today)
         {
-            e.Status = ValidationStatus.None;
-        }
-        else
-        {
-            e.Status = ValidationStatus.Success;
+            e.Status = ValidationStatus.Error;
         }
     }
-
-
 }

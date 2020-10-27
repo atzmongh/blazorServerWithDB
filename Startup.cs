@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
+using Flexor;
 
 namespace blazorServerWithDB
 {
@@ -41,6 +42,7 @@ namespace blazorServerWithDB
                 options.ChangeTextOnKeyPress = true; // optional
             }).AddBootstrapProviders()
               .AddFontAwesomeIcons();
+            services.AddFlexor();
             //Commands to get logging of SQL statements and see the problem of "double records being tracked"
             //However, did not seem to give me the data in the "debug" window.
             //services.AddLogging(loggingBuilder =>

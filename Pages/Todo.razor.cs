@@ -22,32 +22,24 @@ namespace blazorServerWithDB.Pages
             StatusDate = DateTime.Now
         };
 
-        public Todoes originalTodo;
-
         public string filterStatus = "All";
-
         public string orderBy = "Id";
-        public bool showTodoForm = false;
         public bool showModalForm = false;
         public string addOrEdit = "add";   //or "edit"
-        public Modal modalRef = new Modal();
        
         protected override async Task OnInitializedAsync()
         {
             todoList = await todoService.TodoListByStatus(filterStatus, orderBy);
         }
 
-        public async Task StatusSelected(ChangeEventArgs e)
+        public async Task StatusSelected(string filterStatus)
         {
-            filterStatus = e.Value.ToString();
             todoList = await todoService.TodoListByStatus(filterStatus, orderBy);
         }
 
-        public async Task orderSelected(ChangeEventArgs e)
+        public async Task OrderSelected(string orderBy)
         {
-            orderBy = e.Value.ToString();
             todoList = await todoService.TodoListByStatus(filterStatus, orderBy);
-
         }
 
         public void AddTodo()
@@ -61,9 +53,7 @@ namespace blazorServerWithDB.Pages
                 StatusDate = DateTime.Now
             };
             this.addOrEdit = "add";
-            // this.showTodoForm = true;
             showModalForm = true;
-            this.StateHasChanged();
         }
         
 
@@ -79,13 +69,6 @@ namespace blazorServerWithDB.Pages
             showModalForm = true;
         }
 
-        public async Task TodoFormFinished()
-        {
-            showTodoForm = false;
-            todoList = await todoService.TodoListByStatus(filterStatus, orderBy);
-            this.StateHasChanged();
-
-        }
         public async Task ModalFormFinished()
         {
             showModalForm = false;
