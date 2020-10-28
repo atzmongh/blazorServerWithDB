@@ -10,8 +10,8 @@
             <CloseButton Clicked="@HideModal" />
         </ModalHeader>
         <ModalBody>
-            <Validations @ref="validationsRef" Mode="ValidationMode.Auto"  ValidateOnLoad="true">
-                <Validation Validator="@ValidationRule.IsNotEmpty">
+            <Validations @ref="validationsRef" Mode="ValidationMode.Auto"  ValidateOnLoad="false">
+                <Validation Validator="@IsRequired">
                     <Field>
                         <FieldLabel>Description</FieldLabel>
                         <TextEdit @bind-Text="aTodo.Description" Placeholder="Enter todo description">
@@ -68,8 +68,9 @@
             if (value == true)
             {
                 modalRef.Show();
-                validationsRef.ValidateAll();   //This is required for the next time we are using the Modal form - without it the
-                                                //validators remained in the "valid" status.
+                validationsRef.ValidateAll();   //This is required for the next time we are using the Modal form - 
+                                                //without it the validators remained in the "valid" status.
+
             }
         }
     }
@@ -116,9 +117,12 @@
     }
     public void ValidDueDate(ValidatorEventArgs e)
     {
-        if ((DateTime)e.Value < DateTime.Today)
-        {
-            e.Status = ValidationStatus.Error;
-        }
+        e.Status = aTodo.DueDate < DateTime.Today ?
+            ValidationStatus.Error : ValidationStatus.Success;
+    }
+    public void IsRequired(ValidatorEventArgs e)
+    {
+        e.Status = String.IsNullOrEmpty(aTodo.Description) ?
+            ValidationStatus.Error : ValidationStatus.Success;
     }
 }

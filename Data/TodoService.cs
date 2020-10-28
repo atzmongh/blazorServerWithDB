@@ -88,6 +88,7 @@ namespace blazorServerWithDB.Data
         {
             theTodo.StartDate = DateTime.Now;
             theTodo.StatusDate = DateTime.Now;
+            theTodo.Id = 0;
             db.Todoes.Add(theTodo);
             db.SaveChanges();
         }
