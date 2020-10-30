@@ -3,6 +3,7 @@
 @using blazorServerWithDB.Data
 @using blazorServerWithDB.Models
 @using Microsoft.Data.SqlClient
+@using Blazorise.DataGrid
 @inject ITodoService todoService
 @using Flexor   @*not enough documentation to use it*@
 
@@ -48,6 +49,8 @@
 
 <!--TO DO REPORT
 ****************-->
+<APaginator pageCount="12" pageSize="20"></APaginator>
+
 @if (todoList == null)
 {
     <p><em>Loading...</em></p>
@@ -81,4 +84,39 @@ else
             }
         </tbody>
     </table>
+
+
+    <Table style="width:200px;">
+        <tr style="height:12px;">
+            <td>Page</td>
+            <td><input type="number" style="width:60px;" /></td>
+            <td>of 27</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><button class="btn btn-info">First</button><button class="btn btn-info">Last</button></td>
+            <td></td>
+        </tr>
+    </Table>
 }
+@*<DataGrid TItem="Todoes" Data="@todoList" PageSize="15" ShowPager="true">
+        <DataGridColumn TItem="Todoes" Field="@nameof(Todoes.Id)" Caption="Id"  />
+        <DataGridDateColumn TItem="Todoes" Field="@nameof(Todoes.StartDate)" ></DataGridDateColumn>
+        <DataGridColumn TItem="Todoes" Field="@nameof(Todoes.StartDate)" Caption="Start Date">
+            <DisplayTemplate>
+                @($"{ (context as Todoes).StartDate.ToShortDateString()}")
+            </DisplayTemplate>
+        </DataGridColumn>
+        <DataGridColumn TItem="Todoes" Field="@nameof(Todoes.DueDate)" Caption="Due Date">
+            <DisplayTemplate>
+                @($"{ (context as Todoes).DueDate?.ToShortDateString()}")
+            </DisplayTemplate>
+        </DataGridColumn>
+        <DataGridColumn TItem="Todoes" Field="@nameof(Todoes.Status)" Caption="Status" Filterable="true"></DataGridColumn>
+        <DataGridColumn TItem="Todoes" Field="@nameof(Todoes.StatusDate)" Caption="Status Date">
+            <DisplayTemplate>
+                @($"{ (context as Todoes).StatusDate.ToShortDateString()}")
+            </DisplayTemplate>
+        </DataGridColumn>
+        <DataGridColumn TItem="Todoes" Field="@nameof(Todoes.Description)" Caption="Description"></DataGridColumn>
+    </DataGrid>*@

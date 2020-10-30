@@ -80,5 +80,9 @@ namespace blazorServerWithDB.Pages
             this.StateHasChanged();
 
         }
+        public void PageClicked()
+        {
+
+        }
     }
 }

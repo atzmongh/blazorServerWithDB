@@ -1,0 +1,56 @@
+﻿<div class="card" style="margin:5px; padding:5px;width:380px;background-color:gainsboro">
+    <span class="oi oi-media-skip-backward">
+        Page <input type="number" value="@inputPage" style="width:60px;" @onchange="PageNumberUpdated"/> of @pageCount
+        <span class="oi oi-media-skip-forward"></span>
+        Page Size <input type="number" value="@pageSize" style="width:60px;"/>
+    </span>
+
+
+</div>
+
+@code {
+    [Parameter]
+    public int pageCount { get; set; }
+    [Parameter]
+    public int pageSize { get; set; }
+
+    [Parameter]
+    public Action<int> PageNumberChanged { get; set; }
+
+    public int currentPage = 1;
+    public int inputPage = 1;
+
+    public void LeftArrowPressed()
+    {
+        if (currentPage >= 1)
+        {
+            currentPage--;
+            PageNumberChanged(currentPage);
+        }
+    }
+    public void RightArrowPressed()
+    {
+        if (currentPage < pageCount)
+        {
+            currentPage++;
+            PageNumberChanged(currentPage);
+        }
+    }
+    public  void PageNumberUpdated(ChangeEventArgs e)
+    {
+        if (inputPage >= 1 && inputPage <= pageCount)
+        {
+            currentPage = inputPage;
+            if (PageNumberChanged != null)
+            {
+                PageNumberChanged(currentPage);
+            }
+
+        }
+        else
+        {
+            inputPage = currentPage;
+        }
+    }
+
+}
