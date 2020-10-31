@@ -49,7 +49,8 @@
 
 <!--TO DO REPORT
 ****************-->
-<APaginator pageCount="12" pageSize="20"></APaginator>
+<APaginator totalRecords="@totalTodoes" pageSize="@pageSize" currentPage="@currentPage" PaginatorChanged="OnPaginatorChanged"></APaginator>
+
 
 @if (todoList == null)
 {
@@ -84,20 +85,6 @@ else
             }
         </tbody>
     </table>
-
-
-    <Table style="width:200px;">
-        <tr style="height:12px;">
-            <td>Page</td>
-            <td><input type="number" style="width:60px;" /></td>
-            <td>of 27</td>
-        </tr>
-        <tr>
-            <td></td>
-            <td><button class="btn btn-info">First</button><button class="btn btn-info">Last</button></td>
-            <td></td>
-        </tr>
-    </Table>
 }
 @*<DataGrid TItem="Todoes" Data="@todoList" PageSize="15" ShowPager="true">
         <DataGridColumn TItem="Todoes" Field="@nameof(Todoes.Id)" Caption="Id"  />

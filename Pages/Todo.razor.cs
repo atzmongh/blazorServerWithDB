@@ -26,23 +26,29 @@ namespace blazorServerWithDB.Pages
         public string orderBy = "Id";
         public bool showModalForm = false;
         public string addOrEdit = "add";   //or "edit"
+        //paginator variables
+        public int pageSize = 10;
+        public int currentPage = 1;
+        public int totalTodoes;
+
 
         protected override async Task OnInitializedAsync()
         {
-            todoList = await todoService.TodoListByStatus(filterStatus, orderBy);
+            todoList = await todoService.TodoListByStatus(filterStatus, orderBy, currentPage, pageSize, ref totalTodoes);
         }
 
         public async Task StatusSelected(string filterStatus)
         {
             this.filterStatus = filterStatus;  //update the filter status field, so that the <Select> element will keep the updated
                                                //valued
-            todoList = await todoService.TodoListByStatus(filterStatus, orderBy);
+            currentPage = 1;
+            todoList = await todoService.TodoListByStatus(filterStatus, orderBy, currentPage, pageSize, ref totalTodoes);
         }
 
         public async Task OrderSelected(string orderBy)
         {
             this.orderBy = orderBy;
-            todoList = await todoService.TodoListByStatus(filterStatus, orderBy);
+            todoList = await todoService.TodoListByStatus(filterStatus, orderBy, currentPage, pageSize, ref totalTodoes);
         }
 
         public void AddTodo()
@@ -76,13 +82,20 @@ namespace blazorServerWithDB.Pages
         public async Task ModalFormFinished()
         {
             showModalForm = false;
-            todoList = await todoService.TodoListByStatus(filterStatus, orderBy);
+            todoList = await todoService.TodoListByStatus(filterStatus, orderBy, currentPage, pageSize, ref totalTodoes);
             this.StateHasChanged();
 
         }
         public void PageClicked()
         {
 
+        }
+        public async Task OnPaginatorChanged(int currentPage, int pageSize)
+        {
+            this.currentPage = currentPage;
+            this.pageSize = pageSize;
+            todoList = await todoService.TodoListByStatus(filterStatus, orderBy, currentPage, pageSize, ref totalTodoes);
+            this.StateHasChanged();
         }
     }
 }

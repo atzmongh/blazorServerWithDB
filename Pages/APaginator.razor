@@ -1,56 +1,107 @@
 ﻿<div class="card" style="margin:5px; padding:5px;width:380px;background-color:gainsboro">
-    <span class="oi oi-media-skip-backward">
-        Page <input type="number" value="@inputPage" style="width:60px;" @onchange="PageNumberUpdated"/> of @pageCount
-        <span class="oi oi-media-skip-forward"></span>
-        Page Size <input type="number" value="@pageSize" style="width:60px;"/>
+    <span>
+        <span class="oi oi-media-skip-backward" style="cursor:pointer" @onclick="()=>currentPage=1"></span>
+        Page <input type="number" @bind="@currentPage" style="width:60px;" /> of @pageCount
+        <span class="oi oi-media-skip-forward" style="cursor:pointer" @onclick="()=>currentPage=pageCount"></span>
+        Page Size <input type="number" @bind="@pageSize" style="width:60px;" />
     </span>
 
 
 </div>
 
 @code {
+    /// <summary>
+    /// how many records the list contains. Using this data and page size the paginator calculates how many pages
+    /// are required.
+    /// </summary>
     [Parameter]
-    public int pageCount { get; set; }
+    public int totalRecords { get; set; }
+    /// <summary>
+    /// calculates the number of pages. Note that _pageSize cannot be 0, as this is tested in the page_size property
+    /// </summary>
+    public int pageCount => (totalRecords - 1) / _pageSize + 1;
+    private int _pageSize = 15;
+
+    /// <summary>
+    /// How many records are contained in each page. This number cannot be smaller than 10 or larger than 1000.
+    /// </summary>
     [Parameter]
-    public int pageSize { get; set; }
-
-    [Parameter]
-    public Action<int> PageNumberChanged { get; set; }
-
-    public int currentPage = 1;
-    public int inputPage = 1;
-
-    public void LeftArrowPressed()
+    public int pageSize
     {
-        if (currentPage >= 1)
+        get
         {
-            currentPage--;
-            PageNumberChanged(currentPage);
+            return _pageSize;
         }
-    }
-    public void RightArrowPressed()
-    {
-        if (currentPage < pageCount)
+        set
         {
-            currentPage++;
-            PageNumberChanged(currentPage);
-        }
-    }
-    public  void PageNumberUpdated(ChangeEventArgs e)
-    {
-        if (inputPage >= 1 && inputPage <= pageCount)
-        {
-            currentPage = inputPage;
-            if (PageNumberChanged != null)
+            if (value == _pageSize)
+                return;
+
+            if (value < 10)
             {
-                PageNumberChanged(currentPage);
+                _pageSize = 10;
             }
-
-        }
-        else
-        {
-            inputPage = currentPage;
+            else if (value > 1000)
+            {
+                _pageSize = 1000;
+            }
+            else
+            {
+                _pageSize = value;
+            }
+            _currentPage = 1;
+            if (PaginatorChanged != null)
+            {
+                PaginatorChanged(_currentPage, _pageSize);
+            }
         }
     }
 
+    /// <summary>
+    /// The user of the paginator can use this delegate to register a callback function. It gets 2 parameters:
+    /// - currentPage - the page the user has chosen
+    /// - page size - the page size chosen by the user (or set by default)
+    /// It returns a Task, as it is an asynchronous delegate
+    /// </summary>
+    [Parameter]
+    public Func<int,int, Task> PaginatorChanged { get; set; }
+
+    private int _currentPage = 1;
+    /// <summary>
+    /// the current page to be displayed. The page hosting the paginator may force a current page. For example after 
+    /// changing the filter criteria - it makes sense to reset the current page to 1
+    /// When the user changes the value of the current page, the "set" accessor is called (because of the @bind=...)
+    /// If the current page is off the limits - we do not update the _currentPage field. This causes the value of the
+    /// input element to be reverted back to the original value (because the "get" accessor returns the original value
+    /// kept in _currentPage)
+    /// </summary>
+    [Parameter]
+    public int currentPage
+    {
+        get { return _currentPage; }
+        set
+        {
+            if (value == _currentPage) //If the current page did not change - do nothing. This avoid a case of infinite 
+                                       //loop of set accessors
+                return;
+
+            if (value >= 1 && value <= pageCount)  //currentPage is within the limits.
+            {
+                _currentPage = value;
+                if (PaginatorChanged != null)
+                {
+                    PaginatorChanged(_currentPage, _pageSize);
+                }
+            }
+            else if (value < 1)  //the currentPage is less than 1 - make it 1. Note that when rendering, the get accessor
+                                 //will return this value
+            {
+                _currentPage = 1;
+            }
+            else
+            {
+                _currentPage = pageCount;
+            }
+        }
+    }
 }

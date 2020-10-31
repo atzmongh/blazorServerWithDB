@@ -20,8 +20,12 @@ namespace blazorServerWithDB.Data
         /// (active statuses are "not started" and "started")</param>
         /// <param name="orderBy">any field name. For a list of fields see in Todoes2.cs
         /// (ColumnNameList)</param>
+        /// <param name="currentPage">the current page the user has chosen in the paginator</param>
+        /// <param name="pageSize">The page size as requested by the user (or as defined by default)</param>
+        /// <param name="totalTodoes">In this variable the function returns the number of records fetched.
+        /// Note that the actual amount of records returned is limited by the pageSize parameter</param>
         /// <returns>List of Todoes - filtered and ordered</returns>
-        Task<IEnumerable<Todoes>> TodoListByStatus(string theStatus, string orderBy);
+        Task<IEnumerable<Todoes>> TodoListByStatus(string theStatus, string orderBy, int currentPage, int pageSize, ref int totalTodoes);
 
         void AddTodo(Todoes theTodo);
         void EditTodo(Todoes aTodo);
@@ -37,6 +41,7 @@ namespace blazorServerWithDB.Data
 
         public TodoService()
         {
+       
         }
         /// <summary>
         /// returns a list of to do items, filtered by status, and ordered by the
@@ -48,7 +53,7 @@ namespace blazorServerWithDB.Data
         /// <param name="orderBy">any field name. For a list of fields see in Todoes2.cs
         /// (ColumnNameList)</param>
         /// <returns>List of Todoes - filtered and ordered</returns>
-        public Task<IEnumerable<Todoes>> TodoListByStatus(string theStatus, string orderBy)
+        public Task<IEnumerable<Todoes>> TodoListByStatus(string theStatus, string orderBy, int currentPage, int pageSize, ref int totalTodoes)
         {
             if (!Todoes.statusFilterList.Contains(theStatus))
             {
@@ -57,10 +62,11 @@ namespace blazorServerWithDB.Data
             }
             IEnumerable<Todoes> filteredTodos;
 
+            int skipAmount = (currentPage - 1) * pageSize;
             if (theStatus == "All")
             {
                 //show to dos with any status
-                filteredTodos = db.Todoes.OrderBy(columns => EF.Property<object>(columns,orderBy)).AsNoTracking();
+                filteredTodos = db.Todoes.OrderBy(columns => EF.Property<object>(columns,orderBy));
             }
             else if (theStatus == "Active")
             {
@@ -80,8 +86,12 @@ namespace blazorServerWithDB.Data
                     orderby EF.Property<object>(aTodo,orderBy) 
                     select aTodo).AsNoTracking();
             }
+            totalTodoes = filteredTodos.Count();
+           
+            
+            var currentPageTodoes = filteredTodos.Skip(skipAmount).Take(pageSize);
 
-            return Task.FromResult(filteredTodos);
+            return Task.FromResult(currentPageTodoes);
         }
 
         public void AddTodo(Todoes theTodo)
