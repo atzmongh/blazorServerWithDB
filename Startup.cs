@@ -43,18 +43,7 @@ namespace blazorServerWithDB
             }).AddBootstrapProviders()
               .AddFontAwesomeIcons();
             services.AddFlexor();
-            //Commands to get logging of SQL statements and see the problem of "double records being tracked"
-            //However, did not seem to give me the data in the "debug" window.
-            //services.AddLogging(loggingBuilder =>
-            //{
-            //    loggingBuilder.AddConsole();
-            //        //.AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Information);
-            //    loggingBuilder.AddDebug();
-            //});
-            //services.AddDbContext<TodoDBContext>(options => {
-            //    options.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=TodoDB;Trusted_Connection=True;");
-            //    options.EnableSensitiveDataLogging(true);
-            //});
+            services.AddDbContext<TodoDBContext>(config => config.EnableSensitiveDataLogging());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

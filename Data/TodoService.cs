@@ -29,6 +29,7 @@ namespace blazorServerWithDB.Data
 
         void AddTodo(Todoes theTodo);
         void EditTodo(Todoes aTodo);
+        IEnumerable<TodoSteps> TodoStepsOf(int id);
     }
 
     /// <summary>
@@ -41,7 +42,7 @@ namespace blazorServerWithDB.Data
 
         public TodoService()
         {
-       
+            
         }
         /// <summary>
         /// returns a list of to do items, filtered by status, and ordered by the
@@ -107,6 +108,14 @@ namespace blazorServerWithDB.Data
         {
             db.Todoes.Update(aTodo);
             db.SaveChanges();
+        }
+        public IEnumerable<TodoSteps> TodoStepsOf(int id)
+        {
+            var todoSteps = (from aTodoSteps in db.TodoSteps
+                            //where aTodoSteps.TodoId == id
+                            //orderby aTodoSteps.Date
+                            select aTodoSteps).ToList();
+            return todoSteps;
         }
     }
 }

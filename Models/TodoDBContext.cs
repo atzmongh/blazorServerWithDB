@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Logging;
 
 namespace blazorServerWithDB.Models
 {
@@ -15,7 +16,14 @@ namespace blazorServerWithDB.Models
             : base(options)
         {
         }
-        
+        private ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+        {
+            builder
+            .AddConsole((options) => { })
+            .AddFilter((category, level) =>
+                category == DbLoggerCategory.Database.Command.Name
+                && level == LogLevel.Information);
+        });
 
         public virtual DbSet<TodoSteps> TodoSteps { get; set; }
         public virtual DbSet<Todoes> Todoes { get; set; }
@@ -27,6 +35,7 @@ namespace blazorServerWithDB.Models
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
                 optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=TodoDB;Trusted_Connection=True;");
             }
+            optionsBuilder.UseLoggerFactory(loggerFactory);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -1,10 +1,8 @@
-﻿using System;
+﻿using blazorServerWithDB.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Blazorise;
-using blazorServerWithDB.Models;
-using Microsoft.AspNetCore.Components;
 
 namespace blazorServerWithDB.Pages
 {
@@ -79,6 +77,15 @@ namespace blazorServerWithDB.Pages
             showModalForm = true;
         }
 
+        public void ShowTodoSteps(int id)
+        {
+            Todoes showStepsForTodo = todoList.Single(oneTodo => oneTodo.Id == id);
+            if (showStepsForTodo == null)
+            {
+                throw new Exception($"Todo item with Id:{id} was not found. Total todos in the list: {todoList.Count()}");
+            }
+            showStepsForTodo.ShowTodoSteps = !showStepsForTodo.ShowTodoSteps;//toggle its state
+        }
         public async Task ModalFormFinished()
         {
             showModalForm = false;
@@ -96,6 +103,10 @@ namespace blazorServerWithDB.Pages
             this.pageSize = pageSize;
             todoList = await todoService.TodoListByStatus(filterStatus, orderBy, currentPage, pageSize, ref totalTodoes);
             this.StateHasChanged();
+        }
+        public IEnumerable<TodoSteps> getTodoStepsOf(int id)
+        {
+            return todoService.TodoStepsOf(id);
         }
     }
 }
