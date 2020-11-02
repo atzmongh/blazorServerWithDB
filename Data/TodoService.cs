@@ -30,6 +30,7 @@ namespace blazorServerWithDB.Data
         void AddTodo(Todoes theTodo);
         void EditTodo(Todoes aTodo);
         IEnumerable<TodoSteps> TodoStepsOf(int id);
+        void AddTodoStep(int todoId, string description);
     }
 
     /// <summary>
@@ -91,6 +92,10 @@ namespace blazorServerWithDB.Data
            
             
             var currentPageTodoes = filteredTodos.Skip(skipAmount).Take(pageSize);
+            foreach(var aTodo in currentPageTodoes)
+            {
+                int count = aTodo.TodoSteps.Count();
+            }
 
             return Task.FromResult(currentPageTodoes);
         }
@@ -112,10 +117,22 @@ namespace blazorServerWithDB.Data
         public IEnumerable<TodoSteps> TodoStepsOf(int id)
         {
             var todoSteps = (from aTodoSteps in db.TodoSteps
-                            //where aTodoSteps.TodoId == id
-                            //orderby aTodoSteps.Date
-                            select aTodoSteps).ToList();
+                             where aTodoSteps.TodoId == id
+                             orderby aTodoSteps.Date
+                             select aTodoSteps).ToList();
             return todoSteps;
+        }
+
+        public void AddTodoStep(int todoId, string description)
+        {
+            TodoSteps aStep = new TodoSteps()
+            {
+                Date = DateTime.Now,
+                Description = description,
+                TodoId = todoId
+            };
+            db.TodoSteps.Add(aStep);
+            db.SaveChanges();
         }
     }
 }

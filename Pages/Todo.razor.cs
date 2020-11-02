@@ -28,6 +28,7 @@ namespace blazorServerWithDB.Pages
         public int pageSize = 10;
         public int currentPage = 1;
         public int totalTodoes;
+        public Dictionary<int, string> descDict = new Dictionary<int, string>();
 
 
         protected override async Task OnInitializedAsync()
@@ -79,12 +80,21 @@ namespace blazorServerWithDB.Pages
 
         public void ShowTodoSteps(int id)
         {
-            Todoes showStepsForTodo = todoList.Single(oneTodo => oneTodo.Id == id);
-            if (showStepsForTodo == null)
+            Todoes clickedTodo = todoList.Single(oneTodo => oneTodo.Id == id);
+            if (clickedTodo == null)
             {
                 throw new Exception($"Todo item with Id:{id} was not found. Total todos in the list: {todoList.Count()}");
             }
-            showStepsForTodo.ShowTodoSteps = !showStepsForTodo.ShowTodoSteps;//toggle its state
+            clickedTodo.ShowTodoSteps = !clickedTodo.ShowTodoSteps;//toggle its state
+            if (clickedTodo.ShowTodoSteps)
+            {
+                //The user wants to see the todo steps - read them
+                clickedTodo.TodoSteps = getTodoStepsOf(id).ToList();
+            }
+            else
+            {
+                clickedTodo.TodoSteps.Clear();
+            }
         }
         public async Task ModalFormFinished()
         {
@@ -107,6 +117,20 @@ namespace blazorServerWithDB.Pages
         public IEnumerable<TodoSteps> getTodoStepsOf(int id)
         {
             return todoService.TodoStepsOf(id);
+        }
+        public void OnAddStep(int id)
+        {
+            if (!descDict.ContainsKey(id))
+            {
+                throw new Exception(@"The description dictionary does not contains key:{id}");
+            }
+            string desc = descDict[id];
+            descDict[id] = "";
+            if (desc.Trim() != "")
+            {
+                todoService.AddTodoStep(id, desc);
+            }
+            
         }
     }
 }
