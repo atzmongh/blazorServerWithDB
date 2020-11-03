@@ -9,7 +9,7 @@ namespace blazorServerWithDB.Pages
     public partial class Todo
     {
 
-        public IEnumerable<Todoes> todoList;
+        public List<Todoes> todoList;
 
         public Todoes aTodo = new Todoes()
         {
@@ -31,23 +31,23 @@ namespace blazorServerWithDB.Pages
         public Dictionary<int, string> descDict = new Dictionary<int, string>();
 
 
-        protected override async Task OnInitializedAsync()
+        protected override void OnInitialized()
         {
-            todoList = await todoService.TodoListByStatus(filterStatus, orderBy, currentPage, pageSize, ref totalTodoes);
+            todoList = todoService.TodoListByStatus(filterStatus, orderBy, currentPage, pageSize, ref totalTodoes);
         }
 
-        public async Task StatusSelected(string filterStatus)
+        public void StatusSelected(string filterStatus)
         {
             this.filterStatus = filterStatus;  //update the filter status field, so that the <Select> element will keep the updated
                                                //valued
             currentPage = 1;
-            todoList = await todoService.TodoListByStatus(filterStatus, orderBy, currentPage, pageSize, ref totalTodoes);
+            todoList = todoService.TodoListByStatus(filterStatus, orderBy, currentPage, pageSize, ref totalTodoes);
         }
 
-        public async Task OrderSelected(string orderBy)
+        public void OrderSelected(string orderBy)
         {
             this.orderBy = orderBy;
-            todoList = await todoService.TodoListByStatus(filterStatus, orderBy, currentPage, pageSize, ref totalTodoes);
+            todoList = todoService.TodoListByStatus(filterStatus, orderBy, currentPage, pageSize, ref totalTodoes);
         }
 
         public void AddTodo()
@@ -95,11 +95,12 @@ namespace blazorServerWithDB.Pages
             {
                 clickedTodo.TodoSteps.Clear();
             }
+            this.StateHasChanged();
         }
-        public async Task ModalFormFinished()
+        public void ModalFormFinished()
         {
             showModalForm = false;
-            todoList = await todoService.TodoListByStatus(filterStatus, orderBy, currentPage, pageSize, ref totalTodoes);
+            todoList = todoService.TodoListByStatus(filterStatus, orderBy, currentPage, pageSize, ref totalTodoes);
             this.StateHasChanged();
 
         }
@@ -107,11 +108,11 @@ namespace blazorServerWithDB.Pages
         {
 
         }
-        public async Task OnPaginatorChanged(int currentPage, int pageSize)
+        public void OnPaginatorChanged(int currentPage, int pageSize)
         {
             this.currentPage = currentPage;
             this.pageSize = pageSize;
-            todoList = await todoService.TodoListByStatus(filterStatus, orderBy, currentPage, pageSize, ref totalTodoes);
+            todoList = todoService.TodoListByStatus(filterStatus, orderBy, currentPage, pageSize, ref totalTodoes);
             this.StateHasChanged();
         }
         public IEnumerable<TodoSteps> getTodoStepsOf(int id)

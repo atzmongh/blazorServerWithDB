@@ -25,7 +25,7 @@ namespace blazorServerWithDB.Data
         /// <param name="totalTodoes">In this variable the function returns the number of records fetched.
         /// Note that the actual amount of records returned is limited by the pageSize parameter</param>
         /// <returns>List of Todoes - filtered and ordered</returns>
-        Task<IEnumerable<Todoes>> TodoListByStatus(string theStatus, string orderBy, int currentPage, int pageSize, ref int totalTodoes);
+        List<Todoes> TodoListByStatus(string theStatus, string orderBy, int currentPage, int pageSize, ref int totalTodoes);
 
         void AddTodo(Todoes theTodo);
         void EditTodo(Todoes aTodo);
@@ -55,7 +55,7 @@ namespace blazorServerWithDB.Data
         /// <param name="orderBy">any field name. For a list of fields see in Todoes2.cs
         /// (ColumnNameList)</param>
         /// <returns>List of Todoes - filtered and ordered</returns>
-        public Task<IEnumerable<Todoes>> TodoListByStatus(string theStatus, string orderBy, int currentPage, int pageSize, ref int totalTodoes)
+        public List<Todoes> TodoListByStatus(string theStatus, string orderBy, int currentPage, int pageSize, ref int totalTodoes)
         {
             if (!Todoes.statusFilterList.Contains(theStatus))
             {
@@ -68,15 +68,15 @@ namespace blazorServerWithDB.Data
             if (theStatus == "All")
             {
                 //show to dos with any status
-                filteredTodos = db.Todoes.OrderBy(columns => EF.Property<object>(columns,orderBy));
+                filteredTodos = db.Todoes.OrderBy(columns => EF.Property<object>(columns,orderBy)).AsNoTracking();
             }
             else if (theStatus == "Active")
             {
                 //show only active statuses (not started and started)
                 filteredTodos =
                     (from aTodo in db.Todoes
-                    where aTodo.Status == "Not Started" || aTodo.Status == "Started"
-                    orderby EF.Property<object>(aTodo, orderBy)
+                     where aTodo.Status == "Not Started" || aTodo.Status == "Started"
+                     orderby EF.Property<object>(aTodo, orderBy)
                      select aTodo).AsNoTracking();
             }
             else
@@ -84,20 +84,16 @@ namespace blazorServerWithDB.Data
                 //show a specific status
                 filteredTodos =
                     (from aTodo in db.Todoes
-                    where aTodo.Status == theStatus
-                    orderby EF.Property<object>(aTodo,orderBy) 
-                    select aTodo).AsNoTracking();
+                     where aTodo.Status == theStatus
+                     orderby EF.Property<object>(aTodo, orderBy)
+                     select aTodo).AsNoTracking();
             }
             totalTodoes = filteredTodos.Count();
            
             
-            var currentPageTodoes = filteredTodos.Skip(skipAmount).Take(pageSize);
-            foreach(var aTodo in currentPageTodoes)
-            {
-                int count = aTodo.TodoSteps.Count();
-            }
+            var currentPageTodoes = filteredTodos.Skip(skipAmount).Take(pageSize).ToList();
 
-            return Task.FromResult(currentPageTodoes);
+            return currentPageTodoes;
         }
 
         public void AddTodo(Todoes theTodo)
