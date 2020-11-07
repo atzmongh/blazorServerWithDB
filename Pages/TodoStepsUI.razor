@@ -1,0 +1,50 @@
+﻿@using blazorServerWithDB.Models
+@using blazorServerWithDB.Data 
+@inject ITodoService todoService
+
+@foreach (var aTodoStep in theTodo.TodoSteps.OrderByDescending(aStep => aStep.Date))
+{
+    <tr>
+        <td colspan="3"></td>
+        <td style="background-color:cornsilk">@aTodoStep.Date.ToShortDateString()</td>
+        <td colspan="4" style="background-color:cornsilk">@aTodoStep.Description</td>
+    </tr>
+}
+
+<tr>
+    <td colspan="3"></td>
+    <td style="background-color:cornsilk">@DateTime.Today.ToShortDateString()</td>
+    <td colspan="4" style="background-color:cornsilk">
+        <input type="text" style="width:85%" @bind="description" />
+        <button class="btn btn-primary" @onclick="OnAddStep">Add</button>
+    </td>
+</tr>
+
+
+@code {
+    /// <summary>
+    /// The todo to which we want to show the list of steps. We assume that the list of steps exists in the 
+    /// "TodoSteps" property of the todo.
+    /// </summary>
+    [Parameter]
+    public Todoes theTodo { get; set; }
+    /// <summary>
+    /// An Action delegate. When an Todo step was added - we will call this action, so the parent component can refresh itself
+    /// It gets as a parameter the id of the todo to which the step was added
+    /// </summary>
+    [Parameter]
+    public Action<int> StepAdded { get; set; }
+
+    public string description;
+
+    public void OnAddStep()
+    {
+
+        if (description.Trim() != "")
+        {
+            todoService.AddTodoStep(theTodo.Id, description);
+        }
+        StepAdded(theTodo.Id);
+    }
+
+}

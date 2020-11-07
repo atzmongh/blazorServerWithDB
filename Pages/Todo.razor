@@ -90,28 +90,7 @@ else
                 </tr>
                 if (todo.ShowTodoSteps)
                 {
-                    foreach (var aTodoStep in todo.TodoSteps.OrderBy(aStep=>aStep.Date))
-                    {
-                        <tr>
-                            <td colspan="3"></td>
-                            <td style="background-color:cornsilk">@aTodoStep.Date.ToShortDateString()</td>
-                            <td colspan="4" style="background-color:cornsilk">@aTodoStep.Description</td>
-                        </tr>
-                    }
-
-                    if (!descDict.ContainsKey(todo.Id))
-                    {
-                        descDict.Add(todo.Id, "");  //add an empty description. This will be used to collect descriptions for new todo steps
-                    }
-                    
-                    <tr>
-                        <td colspan="3"></td>
-                        <td style="background-color:cornsilk">@DateTime.Today.ToShortDateString()</td>
-                        <td colspan="4" style="background-color:cornsilk">
-                            <input type="text" style="width:85%" @bind="descDict[todo.Id]"/>
-                            <button class="btn btn-primary" @onclick="e=>OnAddStep(todo.Id)">Add</button>
-                        </td>
-                    </tr>
+                    <TodoStepsUI theTodo="todo" StepAdded="StepAdded" ></TodoStepsUI>
                 }
             }
         </tbody>

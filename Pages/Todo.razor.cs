@@ -52,7 +52,7 @@ namespace blazorServerWithDB.Pages
 
         public void AddTodo()
         {
-            //Not that we have to clear the EXISTING object - not to create a new object. When creating a new object
+            //Note that we have to clear the EXISTING object - not to create a new object. When creating a new object
             // (aTodo = new Todoes(){...} the binding to TodoModalForm does not work as expected.
             this.aTodo.Description = "";
             this.aTodo.DueDate = DateTime.Now;
@@ -119,20 +119,10 @@ namespace blazorServerWithDB.Pages
         {
             return todoService.TodoStepsOf(id);
         }
-        public void OnAddStep(int id)
+        public void StepAdded(int todoId)
         {
-            if (!descDict.ContainsKey(id))
-            {
-                throw new Exception(@"The description dictionary does not contains key:{id}");
-            }
-            string desc = descDict[id];
-            descDict[id] = "";
-            if (desc.Trim() != "")
-            {
-                todoService.AddTodoStep(id, desc);
-            }
             todoList = todoService.TodoListByStatus(filterStatus, orderBy, currentPage, pageSize, ref totalTodoes);
-            this.ShowTodoSteps(id);
+            this.ShowTodoSteps(todoId);
         }
     }
 }

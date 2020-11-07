@@ -61,7 +61,6 @@
     /// The user of the paginator can use this delegate to register a callback function. It gets 2 parameters:
     /// - currentPage - the page the user has chosen
     /// - page size - the page size chosen by the user (or set by default)
-    /// It returns a Task, as it is an asynchronous delegate
     /// </summary>
     [Parameter]
     public Action<int,int> PaginatorChanged { get; set; }
