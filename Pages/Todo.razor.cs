@@ -19,6 +19,7 @@ namespace blazorServerWithDB.Pages
             Status = "Not Started",
             StatusDate = DateTime.Now
         };
+        public Todoes originalTodo = new Todoes();
 
         public string filterStatus = "All";
         public string orderBy = "Id";
@@ -29,7 +30,6 @@ namespace blazorServerWithDB.Pages
         public int currentPage = 1;
         public int totalTodoes;
         public Dictionary<int, string> descDict = new Dictionary<int, string>();
-
 
         protected override void OnInitialized()
         {
@@ -67,12 +67,12 @@ namespace blazorServerWithDB.Pages
 
         public void EditTodo(int id)
         {
-            Todoes updatedTodo = todoList.Single(oneTodo => oneTodo.Id == id);
-            if (updatedTodo == null)
+            aTodo = todoList.Single(oneTodo => oneTodo.Id == id);
+            if (aTodo == null)
             {
                 throw new Exception($"Todo item with Id:{id} was not found. Total todos in the list: {todoList.Count()}");
             }
-            updatedTodo.Update(aTodo);
+            aTodo.Update(originalTodo);  //Keep the original todo here, so if the user cancels his changes - we can revert
 
             addOrEdit = "edit";
             showModalForm = true;
@@ -131,7 +131,8 @@ namespace blazorServerWithDB.Pages
             {
                 todoService.AddTodoStep(id, desc);
             }
-            
+            todoList = todoService.TodoListByStatus(filterStatus, orderBy, currentPage, pageSize, ref totalTodoes);
+            this.ShowTodoSteps(id);
         }
     }
 }

@@ -68,7 +68,7 @@ namespace blazorServerWithDB.Data
             if (theStatus == "All")
             {
                 //show to dos with any status
-                filteredTodos = db.Todoes.OrderBy(columns => EF.Property<object>(columns,orderBy)).AsNoTracking();
+                filteredTodos = db.Todoes.OrderBy(columns => EF.Property<object>(columns,orderBy));
             }
             else if (theStatus == "Active")
             {
@@ -77,7 +77,7 @@ namespace blazorServerWithDB.Data
                     (from aTodo in db.Todoes
                      where aTodo.Status == "Not Started" || aTodo.Status == "Started"
                      orderby EF.Property<object>(aTodo, orderBy)
-                     select aTodo).AsNoTracking();
+                     select aTodo);
             }
             else
             {
@@ -86,7 +86,7 @@ namespace blazorServerWithDB.Data
                     (from aTodo in db.Todoes
                      where aTodo.Status == theStatus
                      orderby EF.Property<object>(aTodo, orderBy)
-                     select aTodo).AsNoTracking();
+                     select aTodo);
             }
             totalTodoes = filteredTodos.Count();
            
@@ -107,7 +107,6 @@ namespace blazorServerWithDB.Data
 
         public void EditTodo(Todoes aTodo)
         {
-            db.Todoes.Update(aTodo);
             db.SaveChanges();
         }
         public IEnumerable<TodoSteps> TodoStepsOf(int id)
@@ -121,14 +120,19 @@ namespace blazorServerWithDB.Data
 
         public void AddTodoStep(int todoId, string description)
         {
-            TodoSteps aStep = new TodoSteps()
+            //I found out that creating a temporary db context is working better.
+            using (TodoDBContext theDB = new TodoDBContext())
             {
-                Date = DateTime.Now,
-                Description = description,
-                TodoId = todoId
-            };
-            db.TodoSteps.Add(aStep);
-            db.SaveChanges();
+                TodoSteps aStep = new TodoSteps()
+                {
+                    Date = DateTime.Now,
+                    Description = description,
+                    TodoId = todoId
+                };
+                theDB.TodoSteps.Add(aStep);
+                theDB.SaveChanges();
+            }
+            
         }
     }
 }

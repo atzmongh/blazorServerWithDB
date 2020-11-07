@@ -43,7 +43,7 @@
             </Validations>
         </ModalBody>
         <ModalFooter>
-            <Button Color="Color.Secondary" Clicked="@HideModal">Cancel</Button>
+            <Button Color="Color.Secondary" Clicked="@AddEditCancelled">Cancel</Button>
             @if (addOrEdit == "add")
             {
                 <Button Color="Color.Primary" Clicked="@TodoAdded">Add Todo</Button>
@@ -83,6 +83,11 @@
         get; set;
 
     }
+    [Parameter]
+    public Todoes originalTodo
+    {
+        get;set;
+    }
 
 
     [Parameter]
@@ -114,6 +119,11 @@
             this.HideModal();
         }
 
+    }
+    public void AddEditCancelled()
+    {
+        originalTodo.Update(aTodo);  //return original value to todo
+        HideModal();
     }
     public void ValidDueDate(ValidatorEventArgs e)
     {

@@ -43,7 +43,7 @@
 <!--Add/EDIT TO DO ITEM MODAL FORM
 ***********************************-->
 <TodoModalForm showForm="@showModalForm" ModalFormFinished="@ModalFormFinished"
-               addOrEdit="@addOrEdit" aTodo="@aTodo"></TodoModalForm>
+               addOrEdit="@addOrEdit" aTodo="@aTodo" originalTodo="@originalTodo"></TodoModalForm>
 
 
 
@@ -117,24 +117,4 @@ else
         </tbody>
     </table>
 }
-@*<DataGrid TItem="Todoes" Data="@todoList" PageSize="15" ShowPager="true">
-        <DataGridColumn TItem="Todoes" Field="@nameof(Todoes.Id)" Caption="Id"  />
-        <DataGridDateColumn TItem="Todoes" Field="@nameof(Todoes.StartDate)" ></DataGridDateColumn>
-        <DataGridColumn TItem="Todoes" Field="@nameof(Todoes.StartDate)" Caption="Start Date">
-            <DisplayTemplate>
-                @($"{ (context as Todoes).StartDate.ToShortDateString()}")
-            </DisplayTemplate>
-        </DataGridColumn>
-        <DataGridColumn TItem="Todoes" Field="@nameof(Todoes.DueDate)" Caption="Due Date">
-            <DisplayTemplate>
-                @($"{ (context as Todoes).DueDate?.ToShortDateString()}")
-            </DisplayTemplate>
-        </DataGridColumn>
-        <DataGridColumn TItem="Todoes" Field="@nameof(Todoes.Status)" Caption="Status" Filterable="true"></DataGridColumn>
-        <DataGridColumn TItem="Todoes" Field="@nameof(Todoes.StatusDate)" Caption="Status Date">
-            <DisplayTemplate>
-                @($"{ (context as Todoes).StatusDate.ToShortDateString()}")
-            </DisplayTemplate>
-        </DataGridColumn>
-        <DataGridColumn TItem="Todoes" Field="@nameof(Todoes.Description)" Caption="Description"></DataGridColumn>
-    </DataGrid>*@
+
